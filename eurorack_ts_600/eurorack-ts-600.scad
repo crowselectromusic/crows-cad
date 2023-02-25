@@ -5,6 +5,7 @@
 
     - flat_template(); // 2d template for laser cutter / 2d printer
     - drill_template(); // 3d template for 3d printing
+    - flat_template_with_only_rail_profiles(); // 2d template without the position holder, and including rail profiles. Use this for laser cutting the holes.
     - ts600() // a single rail profile
     - module mounting_holes(show_right=true, show_left=true) // make circles that indicate where the mounting holes should be drilled relative to the ts600 profile
     - rounded_rectangle(x,y,roundness); // make a 2d rounded rect, forkd from https://www.thingiverse.com/thing:213733
@@ -172,6 +173,22 @@ module flat_template() {
     }
 }
 
+module flat_template_with_only_rail_profiles() {
+    union() {
+            translate([0,-eurorack_screw_distance/2,0]) {
+                ts600();
+                mounting_holes(show_left=false);
+            }
+        
+            translate([0,eurorack_screw_distance/2,0])
+                rotate(180, [0,0,1]) {
+                    ts600();
+                    mounting_holes(show_right=false);
+                };
+        }
+}
+
+
 module drill_template() {
     union() {
         linear_extrude(height=body_height) difference() {
@@ -200,10 +217,9 @@ module drill_template() {
     }
 }
 
+
 if (is_flat) {
     flat_template();
 } else {
     drill_template();
 }
-
-
